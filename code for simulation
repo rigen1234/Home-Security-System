@@ -1,0 +1,52 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h> 
+ 
+// Define LCD with I2C address 0x27 (adjust if needed) 
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
+ 
+// Define pins 
+const int pirSensor = 2; 
+const int buzzer = 3; 
+int motionDetected = 0; 
+ 
+void setup() { 
+  pinMode(pirSensor, INPUT); 
+  pinMode(buzzer, OUTPUT); 
+ 
+  // Start serial and LCD 
+  Serial.begin(9600); 
+  lcd.init(); 
+  lcd.backlight(); 
+  lcd.setCursor(0, 0); 
+  lcd.print("Home Security"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("System Ready"); 
+ 
+  delay(2000); // Display message for 2 seconds 
+  lcd.clear(); 
+} 
+ 
+void loop() { 
+  motionDetected = digitalRead(pirSensor); 
+ 
+  if (motionDetected == HIGH) { 
+    lcd.setCursor(0, 0); 
+    lcd.print("Motion Detected "); 
+    lcd.setCursor(0, 1); 
+    lcd.print("Alert Activated "); 
+ 
+    digitalWrite(buzzer, HIGH); // Turn on buzzer 
+    Serial.println("Intruder Alert!"); 
+ 
+    delay(2000); // Keep alert for 2 seconds 
+  } else { 
+    lcd.setCursor(0, 0); 
+    lcd.print("System Active   "); 
+    lcd.setCursor(0, 1); 
+    lcd.print("No Motion Found "); 
+ 
+    digitalWrite(buzzer, LOW); // Turn off buzzer 
+  } 
+ 
+  delay(500); 
+} 
